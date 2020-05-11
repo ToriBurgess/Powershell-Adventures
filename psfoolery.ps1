@@ -69,16 +69,16 @@ $S.TargetPath = $targetfile; $S.Save()
 
 
 ## map to networked/remote drive
-New-PSDrive -Name "V" -PSProvider "FileSystem" -Root "\\Ae1ItWCtxVdi003\c$\temp" -Credential(Get-Credential) -Persist:$false;
+New-PSDrive -Name "V" -PSProvider "FileSystem" -Root "\\SERVER\c$\temp" -Credential(Get-Credential) -Persist:$false;
 #do stuff
 Remove-PSDrive -name V
 ### OORRRR
 ## soft-map to networked/remote drive (nonpersistent)
-Set-Location "\\Ae1ItWCtxVdi003\c$\temp"
+Set-Location "\\SERVER\c$\temp"
 #do stuff
 Pop-Location
 ## or
-pushd "\\Ae1ItWCtxVdi003\c$\temp"
+pushd "\\SERVER\c$\temp"
 #do stuff
 popd
 
@@ -99,11 +99,11 @@ Function lazyls {
 
 #REGION - CONNECT TO & CREATE FILE IN NETWORK PATH
 
-$dir = "\\3wp88h2\c$"
+$dir = "\\COMPUTER\c$"
 net use $dir
-test-path \\3wp88h2\c$
-dir '\\3wp88h2\c$\temp\'
-new-item '\\3wp88h2\c$\temp\' -ItemType File -name 'win_produ_apply.txt'
+test-path \\COMPUTER\c$
+dir '\\COMPUTER\c$\temp\'
+new-item '\\COMPUTER\c$\temp\' -ItemType File -name 'win_produ_apply.txt'
 
 #ENDREGION
 
@@ -133,7 +133,7 @@ $test.Split(' ') #<SPACE> is the delimiter
 
 
 # STRSPLIT LETTERS "MAK" FROM CONTENTS OF TXT FILE
-$test = cat \\ncfs02\appdeploy\win_10_ent.txt
+$test = cat \\SERVER\appdeploy\win_10_ent.txt
 $test.Length
 $test[2]
 $test[0]
@@ -344,7 +344,7 @@ $dotNet35State = (Get-WindowsFeature NET-Framework-Core).InstallState
 If ($dotNet35State -eq 'Removed')
 {
     Write-Output "$(Get-Date -UFormat "%Y%m%d %T") - Starting installation of dotNet 2.0, dotNet 3.0, and dotNot 3.5"
-    Install-WindowsFeature NET-Framework-Core -Source \\ncfs02\ISO_Repository\Win2012r2\sxs
+    Install-WindowsFeature NET-Framework-Core -Source \\SERVER01\ISO_Repository\Win2012r2\sxs
     Write-Output "$(Get-Date -UFormat "%Y%m%d %T") - dotNet 2.0, dotNet 3.0, and dotNot 3.5 have been successfully installed"
 }
 #endregion
@@ -370,7 +370,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName TelnetClient
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 Get-WindowsCapability -Online -Name RSAT.* | Add-WindowsCapability -Online
 
-mount-diskimage "\\ncfs02\iso_repository\ea\SW_DVD9_WIN_ENT_10_1703.1_64BIT_English_MLF_X21-47750.iso"
+mount-diskimage "\\SERVER01\iso_repo\ea\SW_DVD9_WIN_ENT_10_1703.1_64BIT_English_MLF_X21-47750.iso"
 DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /LimitAccess /Source:[ISOVOL]:\sources\sxs
 
 
@@ -484,11 +484,11 @@ HidePeopleBar DWORD
 #REGION DISM REPAIR
 
 
-test-path \\ncfs02\ISO_Repository
-net use \\ncfs02\ISO_Repository
-mount-diskimage -ImagePath "\\ncfs02\ISO_Repository\EA\SW_DVD9_WIN_ENT_10_1703.1_64BIT_English_MLF_X21-47750.ISO"
+test-path \\SERVER01\ISO_Repo
+net use \\SERVER01\ISO_Repo
+mount-diskimage -ImagePath "\\SERVER01\ISO_Repo\EA\SW_DVD9_WIN_ENT_10_1703.1_64BIT_English_MLF_X21-47750.ISO"
 get-volume
-explorer \\ncfs02\ISO_Repository\EA\
+explorer \\SERVER01\ISO_Repo\EA\
 
 dism /online /cleanup-image /restorehealth /source:WIM:G:\Sources\Install.wim:1 /limitaccess
 dism /online /cleanup-image /restorehealth /source:WIM:G:\Sources\
